@@ -8,7 +8,7 @@ const CommentSection = () => {
   const [currentComment, setCurrentComment] = useState('');
   const [currentName, setCurrentName] = useState('');
   const [replyComment, setReplyComment] = useState({ text: '', name: '', commentId: null });
-  const [editing, setEditing] = useState({ type: null, id: null, text: '' });
+  const [editing, setEditing] = useState({ type: null, id: null, text: '', commentId: null });
 
   const addComment = () => {
     if (currentName && currentComment) {
@@ -50,7 +50,7 @@ const CommentSection = () => {
       return comment;
     });
     setComments(updatedComments);
-    setEditing({ type: null, id: null, text: '' });
+    setEditing({ type: null, id: null, text: '', commentId: null });
   };
 
   const editReply = (commentId, replyId, newReplyText) => {
@@ -67,7 +67,7 @@ const CommentSection = () => {
       return comment;
     });
     setComments(updatedComments);
-    setEditing({ type: null, id: null, text: '' });
+    setEditing({ type: null, id: null, text: '', commentId: null });
   };
 
   const renderReplyInput = (commentId) => (
@@ -86,9 +86,7 @@ const CommentSection = () => {
       />
       <TouchableOpacity
         style={styles.button}
-        onPress={() =>
-          addReply(commentId, replyComment.text, replyComment.name)
-        }
+        onPress={() => addReply(commentId, replyComment.text, replyComment.name)}
       >
         <Text style={styles.buttonText}>Post Reply</Text>
       </TouchableOpacity>
@@ -123,14 +121,7 @@ const CommentSection = () => {
         >
           <Text style={styles.actionButtonText}>Reply</Text>
         </TouchableOpacity>
-        {editing.type === 'comment' && editing.id === item.id ? (
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={() => editComment(item.id, editing.text)}
-          >
-            <Text style={styles.actionButtonText}>Save Comment</Text>
-          </TouchableOpacity>
-        ) : (
+        {editing.type !== 'comment' && (
           <TouchableOpacity
             style={styles.actionButton}
             onPress={() => setEditing({ type: 'comment', id: item.id, text: item.comment })}
@@ -154,7 +145,7 @@ const CommentSection = () => {
                 />
                 <TouchableOpacity
                   style={styles.button}
-                  onPress={() => editReply(item.commentId, replyItem.id, editing.text)}
+                  onPress={() => editReply(item.id, replyItem.id, editing.text)}
                 >
                   <Text style={styles.buttonText}>Save Reply</Text>
                 </TouchableOpacity>
@@ -164,17 +155,10 @@ const CommentSection = () => {
             )}
             <Text style={styles.timestamp}>{replyItem.timestamp}</Text>
             <View style={styles.actionsContainer}>
-              {editing.type === 'reply' && editing.id === replyItem.id ? (
+              {editing.type !== 'reply' && (
                 <TouchableOpacity
                   style={styles.actionButton}
-                  onPress={() => editReply(item.commentId, replyItem.id, editing.text)}
-                >
-                  <Text style={styles.actionButtonText}>Save Reply</Text>
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity
-                  style={styles.actionButton}
-                  onPress={() => setEditing({ type: 'reply', id: replyItem.id, text: replyItem.comment })}
+                  onPress={() => setEditing({ type: 'reply', id: replyItem.id, text: replyItem.comment, commentId: item.id })}
                 >
                   <Text style={styles.actionButtonText}>Edit Reply</Text>
                 </TouchableOpacity>
